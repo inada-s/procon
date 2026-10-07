@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# サンプルが全部通ったら acc s で提出する。
+#   s                 # t → acc s
+#   FORCE=1 s         # サンプルが落ちても提出する
+#   s -- -l 6017      # "--" 以降は oj s に渡る (言語IDの明示など)
+set -uo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if ! "$DIR/t"; then
+  if [[ -z "${FORCE:-}" ]]; then
+    echo "サンプルが通っていないので提出を中止しました (FORCE=1 s で強制提出)" >&2
+    exit 1
+  fi
+fi
+
+exec acc s "$@"

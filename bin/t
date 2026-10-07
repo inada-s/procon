@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# カレントの問題ディレクトリで main.cpp をビルドし、tests/ のサンプルで oj t を実行する。
+#   t                 # ビルド + 全サンプル実行
+#   t -e 1e-6         # 追加引数は oj t にそのまま渡す (例: 浮動小数点誤差許容)
+#   DEBUG=1 t         # -g + AddressSanitizer/UBSan 付きでビルド
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SRC="${SRC:-main.cpp}"
+CXX="${CXX:-g++}"
+
+if [[ ! -f "$SRC" ]]; then
+  echo "error: $SRC がありません (問題ディレクトリで実行してください)" >&2
+  exit 1
+fi
+if [[ ! -d tests ]]; then
+  echo "error: tests/ がありません (oj d <問題URL> で取得できます)" >&2
+  exit 1
+fi
+
+FLAGS=(-std=c++20 -Wall -Wextra -Wno-unused-parameter -DLOCAL
+       -I "$ROOT/include" -I "$ROOT/lib/ac-library")
+if [[ -n "${DEBUG:-}" ]]; then
+  FLAGS+=(-g -O0 -fsanitize=address,undefined)
+else
+  FLAGS+=(-O2)
+fi
+
+"$CXX" "${FLAGS[@]}" "$SRC" -o a.out
+oj t -c ./a.out -d tests "$@"
