@@ -1,21 +1,40 @@
 #!/usr/bin/env bash
 # コンテストの全問題について、atcoder/<contest>/<A,B,...>/ にテンプレートとサンプルを作る。
 #   gen abc300
-# ログインせずに取得するので、終了済み (問題が公開されている) コンテストのみ対象。
-# 取得に失敗した問題があれば、もう一度実行すると足りない問題だけ作る。追加の引数は atcoder-tools gen に渡す。
-set -euo pipefail
+# ログインせずに取得するので、終了済み (問題が公開されている) コンテストのみ対象。追加の引数は atcoder-tools gen に渡す。
+# tools/atcoder_tools.py 経由で呼び、リクエストの間隔を ATCODER_REQUEST_INTERVAL 秒 (既定 0.5) 空ける。
+# それでも 429 (レート制限) で取得に失敗した問題があれば、少し待って再実行する (既にある問題はスキップされる)。
+set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MAX_ATTEMPTS=5
 
 if [[ $# -lt 1 ]]; then
   echo "usage: gen <contest_id> [atcoder-tools gen の引数...]" >&2
   exit 1
 fi
 
-exec atcoder-tools gen \
-  --config "$ROOT/tools/atcodertools.toml" \
-  --workspace "$ROOT/atcoder" \
-  --template "$ROOT/atcoder/template.jinja2" \
-  --skip-existing-problems \
-  --without-login \
-  "$@"
+LOG="$(mktemp)"
+trap 'rm -f "$LOG"' EXIT
+
+for ((attempt = 1; attempt <= MAX_ATTEMPTS; attempt++)); do
+  "$(uv tool dir)/atcoder-tools/bin/python" "$ROOT/tools/atcoder_tools.py" gen \
+    --config "$ROOT/tools/atcodertools.toml" \
+    --workspace "$ROOT/atcoder" \
+    --template "$ROOT/atcoder/template.jinja2" \
+    --skip-existing-problems \
+    --without-login \
+    "$@" 2>&1 | tee "$LOG"
+
+  if ! grep -q "Failed to download" "$LOG"; then
+    exit 0
+  fi
+  if ((attempt < MAX_ATTEMPTS)); then
+    wait_sec=$((attempt * 5))
+    echo "==> 取得に失敗した問題があります (レート制限)。${wait_sec} 秒待って再実行します ($((attempt + 1))/$MAX_ATTEMPTS)" >&2
+    sleep "$wait_sec"
+  fi
+done
+
+echo "==> 取得に失敗した問題が残っています。しばらく待ってから、もう一度 gen を実行してください" >&2
+exit 1
