@@ -1,0 +1,20 @@
+# atcoder-tools の設定。bin/gen, bin/t, bin/s が --config で渡す (~/.atcodertools.toml は使わない)。
+# ワークスペース (atcoder/) とテンプレート (atcoder/template.jinja2) は bin/gen が引数で指定する。
+
+[codestyle]
+indent_type = 'space'
+indent_width = 4
+lang = 'cpp'
+
+[tester]
+# 実行時間制限 x この値 をローカルテストの制限時間にする
+timeout_adjustment = 1.2
+
+[etc]
+# ログインしない設定は、ここで true にしても CLI 側の既定値 False に上書きされるため bin/gen が --without-login を渡す
+download_without_login = false
+parallel_download = false
+save_no_session_cache = false
+skip_existing_problems = false
+in_example_format = "in_{}.txt"
+out_example_format = "out_{}.txt"

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# サンプルが全部通ったら、main.cpp をクリップボードにコピーしてブラウザで提出ページを開く。
+# AtCoder の提出ページには CAPTCHA があるので、提出 (貼り付けて「提出」を押す) はブラウザで行う。
+#   s                 # t → コピー → 提出ページを開く
+#   FORCE=1 s         # サンプルが落ちても開く
+set -uo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SRC="${SRC:-main.cpp}"
+
+if [[ ! -f metadata.json ]]; then
+  echo "error: metadata.json がありません (gen で作った問題ディレクトリで実行してください)" >&2
+  exit 1
+fi
+
+if ! "$ROOT/bin/t"; then
+  if [[ -z "${FORCE:-}" ]]; then
+    echo "サンプルが通っていないので中止しました (FORCE=1 s で続行)" >&2
+    exit 1
+  fi
+fi
+
+read -r CONTEST PROBLEM < <(python3 -c 'import json; m = json.load(open("metadata.json"))["problem"]; print(m["contest"]["contest_id"], m["problem_id"])')
+URL="https://atcoder.jp/contests/$CONTEST/submit?taskScreenName=$PROBLEM"
+
+# macOS / WSL / Linux (X11, Wayland) の順に使えるものを使う
+if command -v pbcopy >/dev/null; then
+  pbcopy < "$SRC"
+elif command -v clip.exe >/dev/null; then
+  clip.exe < "$SRC"
+elif command -v wl-copy >/dev/null; then
+  wl-copy < "$SRC"
+elif command -v xclip >/dev/null; then
+  xclip -selection clipboard < "$SRC"
+else
+  echo "warning: クリップボードにコピーできませんでした ($SRC を手で貼り付けてください)" >&2
+fi
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  open "$URL"
+elif command -v wslview >/dev/null; then
+  wslview "$URL"
+elif command -v explorer.exe >/dev/null; then
+  explorer.exe "$URL" || true   # explorer.exe は成功しても非 0 を返すことがある
+elif command -v xdg-open >/dev/null; then
+  xdg-open "$URL"
+fi
+
+echo "$SRC をクリップボードにコピーしました。ブラウザで貼り付けて提出してください:"
+echo "  $URL"

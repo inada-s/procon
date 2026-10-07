@@ -1,9 +1,15 @@
 #include <bits/stdc++.h>
+// #include <atcoder/all>
 using namespace std;
+using ll = long long;
 
 #define loop(i, a, b) for (int i = (a); i < (b); ++i)
-#define rep(i, n) for (int i = 0; i < n; ++i)
-#define dump(a) cerr << #a << " = " << (a) << "(L:" << __LINE__ << ")" << endl
+#define rep(i, n) for (int i = 0; i < (n); ++i)
+#ifdef LOCAL
+#define dump(a) cerr << #a << " = " << (a) << " (L:" << __LINE__ << ")" << endl
+#else
+#define dump(a)
+#endif
 
 {% if mod %}
 const long long MOD = {{ mod }};
@@ -16,15 +22,23 @@ const string NO = "{{ no_str }}";
 {% endif %}
 
 {% if prediction_success %}
-void solve({{ formal_arguments }}){
+void solve({{ formal_arguments }}) {
 
 }
 {% endif %}
 
-int main(){
+int main() {
     {% if prediction_success %}
-    {{input_part}}
+    {% if multi_case %}
+    {{ prefix_input_part }}
+    for (int {{ case_loop_var }} = 0; {{ case_loop_var }} < {{ case_count_var }}; ++{{ case_loop_var }}) {
+        {{ case_input_part | replace('\n', '\n    ') }}
+        solve({{ actual_arguments }});
+    }
+    {% else %}
+    {{ input_part }}
     solve({{ actual_arguments }});
+    {% endif %}
     {% else %}
     // Failed to predict input format
     {% endif %}

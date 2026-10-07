@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# コンテストの全問題について、atcoder/<contest>/<A,B,...>/ にテンプレートとサンプルを作る。
+#   gen abc300
+# ログインせずに取得するので、終了済み (問題が公開されている) コンテストのみ対象。
+# 取得に失敗した問題があれば、もう一度実行すると足りない問題だけ作る。追加の引数は atcoder-tools gen に渡す。
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [[ $# -lt 1 ]]; then
+  echo "usage: gen <contest_id> [atcoder-tools gen の引数...]" >&2
+  exit 1
+fi
+
+exec atcoder-tools gen \
+  --config "$ROOT/tools/atcodertools.toml" \
+  --workspace "$ROOT/atcoder" \
+  --template "$ROOT/atcoder/template.jinja2" \
+  --skip-existing-problems \
+  --without-login \
+  "$@"

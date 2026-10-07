@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# カレントの問題ディレクトリで main.cpp をビルドし、in_*.txt / out_*.txt のサンプルで atcoder-tools test を実行する。
+#   t                 # ビルド + 全サンプル実行
+#   t -n 2            # 追加引数は atcoder-tools test にそのまま渡す (この例は 2 番目のサンプルだけ実行)
+#   DEBUG=1 t         # -g + AddressSanitizer/UBSan 付きでビルド
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SRC="${SRC:-main.cpp}"
+CXX="${CXX:-g++}"
+
+if [[ ! -f "$SRC" ]]; then
+  echo "error: $SRC がありません (問題ディレクトリで実行してください)" >&2
+  exit 1
+fi
+if ! compgen -G "in_*.txt" >/dev/null; then
+  echo "error: サンプル (in_*.txt) がありません (gen <contest_id> で取得できます)" >&2
+  exit 1
+fi
+
+FLAGS=(-std=c++23 -Wall -Wextra -Wno-unused-parameter -DLOCAL
+       -I "$ROOT/include" -I "$ROOT/lib/ac-library")
+if [[ -n "${DEBUG:-}" ]]; then
+  FLAGS+=(-g -O0 -fsanitize=address,undefined)
+else
+  FLAGS+=(-O2)
+fi
+
+"$CXX" "${FLAGS[@]}" "$SRC" -o a.out
+atcoder-tools test --config "$ROOT/tools/atcodertools.toml" --exec ./a.out "$@"
