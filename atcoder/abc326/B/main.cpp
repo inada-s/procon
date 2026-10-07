@@ -11,9 +11,14 @@ using ll = long long;
 #define dump(a)
 #endif
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
+void solve(long long N) {
+
+}
+
+int main() {
+    long long N;
+    std::scanf("%lld", &N);
+    solve(N);
     return 0;
 }

@@ -11,9 +11,24 @@ using ll = long long;
 #define dump(a)
 #endif
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+const string YES = "Yes";
+const string NO = "No";
 
+void solve(long long N, long long X, long long Y, std::vector<long long> A) {
+
+}
+
+int main() {
+    long long N;
+    std::scanf("%lld", &N);
+    long long X;
+    std::scanf("%lld", &X);
+    long long Y;
+    std::scanf("%lld", &Y);
+    std::vector<long long> A(N);
+    for(int i = 0 ; i < N ; i++){
+        std::scanf("%lld", &A[i]);
+    }
+    solve(N, X, Y, std::move(A));
     return 0;
 }

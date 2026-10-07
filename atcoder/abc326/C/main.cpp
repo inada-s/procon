@@ -11,21 +11,25 @@ using ll = long long;
 #define dump(a)
 #endif
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
-    int N, M;
-    cin >> N >> M;
-    vector<long long> A(N);
-    rep(i, N) cin >> A[i];
-
+void solve(long long N, long long M, std::vector<long long> A) {
     sort(A.begin(), A.end());
     int ans = 0;
     rep(i, N) {
         ans = max<int>(ans, lower_bound(A.begin(), A.end(), A[i] + M) - lower_bound(A.begin(), A.end(), A[i]));
     }
     cout << ans << endl;
+}
 
+int main() {
+    long long N;
+    std::scanf("%lld", &N);
+    long long M;
+    std::scanf("%lld", &M);
+    std::vector<long long> A(N);
+    for(int i = 0 ; i < N ; i++){
+        std::scanf("%lld", &A[i]);
+    }
+    solve(N, M, std::move(A));
     return 0;
 }

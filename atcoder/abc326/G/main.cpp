@@ -11,9 +11,30 @@ using ll = long long;
 #define dump(a)
 #endif
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
+void solve(long long N, long long M, std::vector<long long> C, std::vector<long long> A, std::vector<std::vector<long long>> L) {
+
+}
+
+int main() {
+    long long N;
+    std::scanf("%lld", &N);
+    long long M;
+    std::scanf("%lld", &M);
+    std::vector<long long> C(N);
+    for(int i = 0 ; i < N ; i++){
+        std::scanf("%lld", &C[i]);
+    }
+    std::vector<long long> A(M);
+    for(int i = 0 ; i < M ; i++){
+        std::scanf("%lld", &A[i]);
+    }
+    std::vector<std::vector<long long>> L(M, std::vector<long long>(N));
+    for(int i = 0 ; i < M ; i++){
+        for(int j = 0 ; j < N ; j++){
+            std::scanf("%lld", &L[i][j]);
+        }
+    }
+    solve(N, M, std::move(C), std::move(A), std::move(L));
     return 0;
 }

@@ -11,9 +11,19 @@ using ll = long long;
 #define dump(a)
 #endif
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+const long long MOD = 998244353;
 
+void solve(long long N, std::vector<long long> A) {
+
+}
+
+int main() {
+    long long N;
+    std::scanf("%lld", &N);
+    std::vector<long long> A(N);
+    for(int i = 0 ; i < N ; i++){
+        std::scanf("%lld", &A[i]);
+    }
+    solve(N, std::move(A));
     return 0;
 }

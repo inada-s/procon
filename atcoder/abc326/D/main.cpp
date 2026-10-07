@@ -11,9 +11,20 @@ using ll = long long;
 #define dump(a)
 #endif
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+const string YES = "Yes";
+const string NO = "No";
 
+void solve(long long N, std::string R, std::string C) {
+
+}
+
+int main() {
+    long long N;
+    std::scanf("%lld", &N);
+    std::string R;
+    std::cin >> R;
+    std::string C;
+    std::cin >> C;
+    solve(N, R, C);
     return 0;
 }
